@@ -1,0 +1,19 @@
+{
+  "name": "cineflow",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix frontend/web run dev",
+    "build:web": "npm --prefix frontend/web run build",
+    "start:web": "npm --prefix frontend/web run start",
+    "lint:web": "npm --prefix frontend/web run lint",
+    "typecheck:web": "npm --prefix frontend/web run typecheck",
+    "dev:api": "npm --prefix backend run dev",
+    "typecheck:api": "npm --prefix backend run typecheck",
+    "build:api": "npm --prefix backend run build",
+    "start:api": "npm --prefix backend run start",
+    "migrate:api": "npm --prefix backend run migrate",
+    "migrate:status:api": "npm --prefix backend run migrate:status",
+    "migrate:create:api": "npm --prefix backend run migrate:create",
+    "migrate:rollback:api": "npm --prefix backend run migrate:rollback"
+  }
+}

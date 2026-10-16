@@ -1,0 +1,127 @@
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  web:
+    name: Check web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+
+  api:
+    name: Check API and migrations
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: cineflow_test
+          MYSQL_USER: cineflow
+          MYSQL_PASSWORD: cineflow
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: mysql://cineflow:cineflow@127.0.0.1:3306/cineflow_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run migrate
+      - run: npm run migrate
+      - run: npm run migrate:status
+
+  deploy-web:
+    name: Deploy web to Vercel
+    needs: [web, api]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_WEB_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/web
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/web/package-lock.json
+      - name: Check Vercel configuration
+        run: |
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+      - run: npm ci
+      - run: npm install --global vercel@latest
+      - run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - run: vercel build --prod --token="$VERCEL_TOKEN"
+      - run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+
+  deploy-api:
+    name: Migrate and deploy API to Render
+    needs: [web, api]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_API_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: production-api
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Check API deployment configuration
+        run: |
+          test -n "$DATABASE_URL"
+          test -n "$RENDER_DEPLOY_HOOK_URL"
+      - run: npm ci
+      - run: npm run migrate
+      - name: Trigger Render deploy for this commit
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --url "${RENDER_DEPLOY_HOOK_URL}&ref=${COMMIT_SHA}"
