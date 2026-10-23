@@ -1,5 +1,5 @@
-import Screen from '@/features/users/components/admin-users-screen'
+import { ApiUsers } from '@/features/admin/components/api-users'
 
 export default function Page() {
-  return <Screen />
+  return <ApiUsers />
 }

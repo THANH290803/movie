@@ -1,7 +1,9 @@
 import type { Episode, Series } from "@/features/series/types/series";
+import { slugify } from "@/lib/slug";
 
 const episode = (id: number, number: number, title: string): Episode => ({
   id,
+  slug: slugify(title),
   number,
   title,
   duration: "48 phút",
@@ -11,6 +13,7 @@ const episode = (id: number, number: number, title: string): Episode => ({
 export const mockSeries: Series[] = [
   {
     id: 1,
+    slug: "the-last-of-us",
     name: "The Last of Us",
     year: "2023",
     genre: "Chính kịch · Hậu tận thế",
@@ -52,6 +55,7 @@ export const mockSeries: Series[] = [
   },
   {
     id: 2,
+    slug: "arcane",
     name: "Arcane",
     year: "2021",
     genre: "Hoạt hình · Phiêu lưu",

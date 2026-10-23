@@ -1,5 +1,5 @@
-import Screen from '@/features/series/components/admin-series-screen'
+import { ApiSeriesOverview } from '@/features/admin/components/api-series-overview'
 
 export default function Page() {
-  return <Screen />
+  return <ApiSeriesOverview />
 }

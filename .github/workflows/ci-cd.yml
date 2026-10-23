@@ -46,7 +46,12 @@ jobs:
       run:
         working-directory: backend
     env:
-      DATABASE_URL: mysql://cineflow:cineflow@127.0.0.1:3306/cineflow_test
+      DB_HOST: 127.0.0.1
+      DB_PORT: '3306'
+      DB_USER: cineflow
+      DB_PASSWORD: cineflow
+      DB_NAME: cineflow_test
+      JWT_SECRET: ci-test-secret-that-is-longer-than-32-bytes
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -57,9 +62,11 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
+      - run: npm run test
       - run: npm run migrate
       - run: npm run migrate
       - run: npm run migrate:status
+      - run: npm run test:integration
 
   deploy-web:
     name: Deploy web to Vercel
@@ -103,7 +110,11 @@ jobs:
       run:
         working-directory: backend
     env:
-      DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+      DB_HOST: ${{ secrets.PRODUCTION_DB_HOST }}
+      DB_PORT: ${{ secrets.PRODUCTION_DB_PORT }}
+      DB_USER: ${{ secrets.PRODUCTION_DB_USER }}
+      DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+      DB_NAME: ${{ secrets.PRODUCTION_DB_NAME }}
       RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
       - uses: actions/checkout@v4
@@ -114,7 +125,11 @@ jobs:
           cache-dependency-path: backend/package-lock.json
       - name: Check API deployment configuration
         run: |
-          test -n "$DATABASE_URL"
+          test -n "$DB_HOST"
+          test -n "$DB_PORT"
+          test -n "$DB_USER"
+          test -n "$DB_PASSWORD"
+          test -n "$DB_NAME"
           test -n "$RENDER_DEPLOY_HOOK_URL"
       - run: npm ci
       - run: npm run migrate

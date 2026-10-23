@@ -7,14 +7,14 @@ import { PageHeader } from '@/components/common/page-header'
 
 export default function EpisodeForm({
   mode,
-  seriesId,
-  partId,
-  episodeId,
+  seriesSlug,
+  partSlug,
+  episodeSlug,
 }: {
   mode: "create" | "edit";
-  seriesId: string;
-  partId?: string;
-  episodeId?: string;
+  seriesSlug: string;
+  partSlug?: string;
+  episodeSlug?: string;
 }) {
   const [title, setTitle] = useState(mode === "edit" ? "Khi ta lạc lối" : "");
   const [video, setVideo] = useState("");
@@ -28,7 +28,7 @@ export default function EpisodeForm({
         description="Mỗi tập là một nội dung độc lập, có video, phụ đề, thumbnail và metadata riêng."
         action={
           <Link
-            href={`/admin/series/${seriesId}`}
+            href={`/admin/series/${seriesSlug}`}
             className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold"
           >
             <ArrowLeft size={16} /> Quay lại phim bộ
@@ -109,7 +109,7 @@ export default function EpisodeForm({
           </section>
           <div className="flex justify-end gap-3">
             <Link
-              href={`/admin/series/${seriesId}`}
+              href={`/admin/series/${seriesSlug}`}
               className="rounded-xl px-5 py-3 text-sm font-bold text-slate-500"
             >
               Hủy
@@ -124,9 +124,9 @@ export default function EpisodeForm({
             Luồng nội dung
           </p>
           <p className="mt-4 text-sm leading-6 text-slate-300">
-            Phim bộ: {seriesId} ·{" "}
-            {partId ? `Phần: ${partId}` : "Không chia phần"}
-            {episodeId ? ` · Tập: ${episodeId}` : ""}
+            Phim bộ: {seriesSlug} ·{" "}
+            {partSlug ? `Phần: ${partSlug}` : "Không chia phần"}
+            {episodeSlug ? ` · Tập: ${episodeSlug}` : ""}
           </p>
           <button
             type="button"

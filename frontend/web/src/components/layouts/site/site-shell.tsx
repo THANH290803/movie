@@ -9,11 +9,15 @@ import {
   Home,
   Menu,
   Search,
+  LogIn,
+  LogOut,
   X,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { routes } from "@/config/routes";
 import { useSavedMovies } from "@/features/movies/hooks/use-saved-movies";
+import { currentUser, onSessionChange, signOut } from '@/lib/api/client';
+import type { ApiUser } from '@/lib/api/types';
 
 const navItems = [
   { label: "Trang chủ", href: routes.site.home, icon: Home },
@@ -32,7 +36,14 @@ const genres = [
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [account, setAccount] = useState<ApiUser | null>(null);
   const { savedIds } = useSavedMovies();
+
+  useEffect(() => {
+    const update = () => setAccount(currentUser());
+    update();
+    return onSessionChange(update);
+  }, []);
 
   return (
     <div className="cine-app">
@@ -136,7 +147,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </form>
           <div className="cine-header-end">
             <span className="cine-header-caption">KHÔNG GIAN ĐIỆN ẢNH</span>
-            <span className="cine-header-mark">C</span>
+            {account ? <button type="button" onClick={() => void signOut()} className="flex items-center gap-2 text-sm text-slate-300" title="Đăng xuất"><span className="hidden sm:inline">{account.fullName}</span><LogOut size={17} /></button> : <Link href={routes.site.login} className="flex items-center gap-2 text-sm text-slate-300"><LogIn size={17} /> Đăng nhập</Link>}
           </div>
         </header>
         <main className="cine-content">{children}</main>

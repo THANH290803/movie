@@ -2,10 +2,10 @@ import type { CatalogMovie } from '@/features/movies/types/catalog-movie'
 
 // Dữ liệu mẫu cho giao diện công khai. Thay bằng API phim khi backend sẵn sàng.
 export const mockCatalog: CatalogMovie[] = [
-  { id: 1, name: 'Dune: Part Two', year: '2024', genre: 'Khoa học viễn tưởng · Phiêu lưu', cast: 'Timothée Chalamet, Zendaya', synopsis: 'Paul Atreides hợp nhất với Chani và người Fremen trong hành trình trả thù những kẻ đã hủy diệt gia đình anh.', type: 'Phim lẻ', duration: '2h 46m', rating: '8.8', image: '/images/movies/dune.jpg' },
-  { id: 3, name: 'The Batman', year: '2022', genre: 'Hành động · Tội phạm', cast: 'Robert Pattinson, Zoë Kravitz', synopsis: 'Batman khám phá tham nhũng ẩn sâu trong thành phố Gotham khi một kẻ sát nhân để lại những manh mối bí ẩn.', type: 'Phim lẻ', duration: '2h 56m', rating: '7.8', image: '/images/movies/neon-nights.jpg' },
+  { id: 1, slug: 'dune-part-two', name: 'Dune: Part Two', year: '2024', genre: 'Khoa học viễn tưởng · Phiêu lưu', cast: 'Timothée Chalamet, Zendaya', synopsis: 'Paul Atreides hợp nhất với Chani và người Fremen trong hành trình trả thù những kẻ đã hủy diệt gia đình anh.', type: 'Phim lẻ', duration: '2h 46m', rating: '8.8', image: '/images/movies/dune.jpg' },
+  { id: 3, slug: 'the-batman', name: 'The Batman', year: '2022', genre: 'Hành động · Tội phạm', cast: 'Robert Pattinson, Zoë Kravitz', synopsis: 'Batman khám phá tham nhũng ẩn sâu trong thành phố Gotham khi một kẻ sát nhân để lại những manh mối bí ẩn.', type: 'Phim lẻ', duration: '2h 56m', rating: '7.8', image: '/images/movies/neon-nights.jpg' },
   {
-    id: 4, name: 'The Last Horizon', year: '2024', genre: 'Hành động · Kịch tính', cast: 'Đang cập nhật',
+    id: 4, slug: 'the-last-horizon', name: 'The Last Horizon', year: '2024', genre: 'Hành động · Kịch tính', cast: 'Đang cập nhật',
     synopsis: 'Một nhóm phi hành gia chiến đấu để đưa nhân loại tìm thấy nơi trú ẩn cuối cùng.',
     type: 'Phim bộ', rating: '8.4', image: '/images/movies/last-horizon.jpg',
     parts: [
@@ -20,9 +20,9 @@ export const mockCatalog: CatalogMovie[] = [
       ] },
     ],
   },
-  { id: 5, name: 'Neon Nights', year: '2023', genre: 'Tâm lý · Tội phạm', cast: 'Đang cập nhật', synopsis: 'Một đêm dài trong thành phố neon hé lộ những bí mật không ai muốn đối diện.', type: 'Phim lẻ', duration: '2h 08m', rating: '8.1', image: '/images/movies/neon-nights.jpg' },
+  { id: 5, slug: 'neon-nights', name: 'Neon Nights', year: '2023', genre: 'Tâm lý · Tội phạm', cast: 'Đang cập nhật', synopsis: 'Một đêm dài trong thành phố neon hé lộ những bí mật không ai muốn đối diện.', type: 'Phim lẻ', duration: '2h 08m', rating: '8.1', image: '/images/movies/neon-nights.jpg' },
   {
-    id: 6, name: 'Into The Wild', year: '2024', genre: 'Phiêu lưu · Gia đình', cast: 'Đang cập nhật',
+    id: 6, slug: 'into-the-wild', name: 'Into The Wild', year: '2024', genre: 'Phiêu lưu · Gia đình', cast: 'Đang cập nhật',
     synopsis: 'Hành trình trở về thiên nhiên của một gia đình giữa những ngọn núi hùng vĩ.',
     type: 'Phim bộ', rating: '7.9', image: '/images/movies/into-the-wild.jpg',
     parts: [{ id: 601, name: 'Phần 1', episodes: [
@@ -32,9 +32,9 @@ export const mockCatalog: CatalogMovie[] = [
       { id: 60104, number: 4, title: 'Trở về', duration: '45 phút', synopsis: 'Hành trình khép lại bằng một góc nhìn mới về gia đình.' },
     ] }],
   },
-  { id: 7, name: 'After the Rain', year: '2024', genre: 'Tình cảm · Chính kịch', cast: 'Đang cập nhật', synopsis: 'Một cuộc gặp lại sau nhiều năm thay đổi cách hai người nhìn về quá khứ.', type: 'Phim lẻ', duration: '1h 54m', rating: '8.2', image: '/images/movies/after-the-rain.jpg' },
+  { id: 7, slug: 'after-the-rain', name: 'After the Rain', year: '2024', genre: 'Tình cảm · Chính kịch', cast: 'Đang cập nhật', synopsis: 'Một cuộc gặp lại sau nhiều năm thay đổi cách hai người nhìn về quá khứ.', type: 'Phim lẻ', duration: '1h 54m', rating: '8.2', image: '/images/movies/after-the-rain.jpg' },
   {
-    id: 8, name: 'The Bear Lake', year: '2024', genre: 'Kinh dị · Bí ẩn', cast: 'Đang cập nhật',
+    id: 8, slug: 'the-bear-lake', name: 'The Bear Lake', year: '2024', genre: 'Kinh dị · Bí ẩn', cast: 'Đang cập nhật',
     synopsis: 'Những điều kỳ lạ xảy ra quanh hồ nước nơi không ai dám đặt chân tới.',
     type: 'Phim bộ', rating: '8.0', image: '/images/movies/bear-lake.jpg',
     parts: [{ id: 801, name: 'Phần 1', episodes: [

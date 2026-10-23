@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       { source: '/settings', destination: '/admin/settings', permanent: false },
       { source: '/series/:path*', destination: '/admin/series/:path*', permanent: false },
       { source: '/movies/new', destination: '/admin/movies/new', permanent: false },
-      { source: '/movies/:id/edit', destination: '/admin/movies/:id/edit', permanent: false },
+      { source: '/movies/:slug/edit', destination: '/admin/movies/:slug/edit', permanent: false },
     ]
   },
 }

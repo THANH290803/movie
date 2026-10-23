@@ -6,8 +6,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Edit3, Play, Plus, X } from "luci
 import { PageHeader } from "@/components/common/page-header";
 import { useMetadataStore } from "@/features/metadata/stores/metadata-store";
 import { contentMetadataLabels } from "@/features/metadata/lib/metadata-rules";
-import { useParams } from "next/navigation";
-import { mockSeries } from "@/features/series/data/mock-series";
+import type { Series } from "@/features/series/types/series";
 import type { Episode as SeriesEpisode } from "@/features/series/types/series";
 
 const previewVideo =
@@ -15,12 +14,9 @@ const previewVideo =
 
 type PreviewEpisode = SeriesEpisode & { partName: string };
 
-export default function SeriesDetailPage() {
-  const { id } = useParams<{ id: string }>();
+export default function SeriesDetailPage({ series }: { series: Series }) {
   const state = useMetadataStore();
-  const series =
-    mockSeries.find((item) => String(item.id) === id) ?? mockSeries[0];
-  const labels = contentMetadataLabels(state, `series:${id}`);
+  const labels = contentMetadataLabels(state, `series:${series.id}`);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<number | null>(null);
   const episodes: PreviewEpisode[] = series.parts.flatMap((part) =>
     part.episodes.map((episode) => ({ ...episode, partName: part.name })),
@@ -55,7 +51,7 @@ export default function SeriesDetailPage() {
               </p>
             </div>
             <Link
-              href={`/admin/series/${id}/edit`}
+              href={`/admin/series/${series.slug}/edit`}
               className="flex h-fit items-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold"
             >
               <Edit3 size={16} /> Sửa phim bộ
@@ -78,7 +74,7 @@ export default function SeriesDetailPage() {
               </p>
             </div>
             <Link
-              href={`/admin/series/${series.id}/episodes/new`}
+              href={`/admin/series/${series.slug}/episodes/new`}
               className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold text-white"
             >
               <Plus size={16} /> Thêm tập
@@ -90,7 +86,7 @@ export default function SeriesDetailPage() {
                 <Episode
                   key={episode.id}
                   episode={episode}
-                  seriesId={series.id}
+                  seriesSlug={series.slug}
                   onPlay={() => setSelectedEpisodeId(episode.id)}
                 />
               ))}
@@ -112,7 +108,7 @@ export default function SeriesDetailPage() {
   );
 }
 
-function Episode({ episode, seriesId, onPlay }: { episode: PreviewEpisode; seriesId: number; onPlay: () => void }) {
+function Episode({ episode, seriesSlug, onPlay }: { episode: PreviewEpisode; seriesSlug: string; onPlay: () => void }) {
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-slate-100 p-4 sm:flex-row sm:items-center">
       <div className="grid size-12 place-items-center rounded-xl bg-orange-50 text-sm font-bold text-orange-600">
@@ -126,7 +122,7 @@ function Episode({ episode, seriesId, onPlay }: { episode: PreviewEpisode; serie
       </div>
       <div className="flex gap-2">
         <Link
-          href={`/admin/series/${seriesId}/episodes/${episode.id}/edit`}
+          href={`/admin/series/${seriesSlug}/episodes/${episode.slug}/edit`}
           aria-label={`Sửa ${episode.title}`}
           className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold"
         >

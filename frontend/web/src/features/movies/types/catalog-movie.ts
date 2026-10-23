@@ -1,6 +1,7 @@
 // The public catalogue has its own DTO; it does not expose admin status or controls.
 type CatalogTitle = {
-  id: number;
+  id: number | string;
+  slug: string;
   name: string;
   year: string;
   genre: string;
@@ -11,7 +12,8 @@ type CatalogTitle = {
 };
 
 export type CatalogEpisode = {
-  id: number;
+  id: number | string;
+  slug?: string;
   number: number;
   title: string;
   duration: string;
@@ -20,7 +22,7 @@ export type CatalogEpisode = {
 };
 
 export type CatalogPart = {
-  id: number;
+  id: number | string;
   name: string;
   episodes: CatalogEpisode[];
 };

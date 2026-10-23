@@ -1,5 +1,6 @@
 export type Movie = {
   id: number;
+  slug: string;
   name: string;
   year: string;
   status: string;

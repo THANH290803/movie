@@ -5,19 +5,24 @@ const path = require('node:path')
 const config = {
   client: 'mysql2',
   connection: () => {
-    const url = process.env.DATABASE_URL
-    if (!url) {
-      throw new Error('DATABASE_URL is required to run migrations')
+    const required = ['DB_HOST', 'DB_USER', 'DB_NAME']
+    const missing = required.filter((key) => !process.env[key]?.trim())
+    if (missing.length) {
+      throw new Error(`Missing MySQL environment variables: ${missing.join(', ')}`)
     }
-    const parsed = new URL(url)
-    if (parsed.protocol !== 'mysql:') {
-      throw new Error('DATABASE_URL must use the mysql:// scheme')
+
+    const port = Number(process.env.DB_PORT || 3306)
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+      throw new Error('DB_PORT must be an integer between 1 and 65535')
     }
-    const database = decodeURIComponent(parsed.pathname.slice(1))
-    if (!database) {
-      throw new Error('DATABASE_URL must include a database name')
+
+    return {
+      host: process.env.DB_HOST,
+      port,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD ?? '',
+      database: process.env.DB_NAME,
     }
-    return { uri: url, database }
   },
   migrations: {
     directory: path.join(__dirname, 'migrations'),

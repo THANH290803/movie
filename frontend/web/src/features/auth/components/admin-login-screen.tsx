@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { routes } from '@/config/routes';
+import { signIn, signOut } from '@/lib/api/client';
 import {
   ArrowRight,
   Clapperboard,
@@ -11,6 +12,11 @@ import {
 } from "lucide-react";
 export default function AdminLoginScreen() {
   const [show, setShow] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
   return (
     <main className="grid min-h-screen bg-slate-950 lg:grid-cols-2">
@@ -40,16 +46,7 @@ export default function AdminLoginScreen() {
             tập phim.
           </p>
         </div>
-        <div className="relative flex gap-12">
-          <div>
-            <b className="text-3xl">2.4K</b>
-            <p className="text-sm text-slate-400">phim đang quản lý</p>
-          </div>
-          <div>
-            <b className="text-3xl">98.6%</b>
-            <p className="text-sm text-slate-400">hệ thống ổn định</p>
-          </div>
-        </div>
+        <p className="relative text-sm text-slate-400">Quản lý nội dung, tập phim và tài khoản trong một không gian.</p>
       </section>
       <section className="flex items-center justify-center bg-white px-6 py-12">
         <div className="w-full max-w-md">
@@ -76,9 +73,20 @@ export default function AdminLoginScreen() {
             Tiếp tục quản lý thư viện phim của bạn.
           </p>
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              router.push(routes.admin.dashboard);
+              setPending(true);
+              setError('');
+              try {
+                const user = await signIn(email, password, remember);
+                if (user.role !== 'admin' && user.role !== 'editor') {
+                  await signOut();
+                  throw new Error('Tài khoản này không có quyền vào trang quản trị.');
+                }
+                router.replace(routes.admin.dashboard);
+              } catch (cause) {
+                setError(cause instanceof Error ? cause.message : 'Đăng nhập thất bại.');
+              } finally { setPending(false); }
             }}
             className="mt-9 space-y-5"
           >
@@ -89,7 +97,9 @@ export default function AdminLoginScreen() {
                 <input
                   required
                   type="email"
-                  defaultValue="admin@cineflow.vn"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="username"
                   className="w-full outline-none"
                 />
               </div>
@@ -101,7 +111,9 @@ export default function AdminLoginScreen() {
                 <input
                   required
                   type={show ? "text" : "password"}
-                  defaultValue="cineflow123"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  autoComplete="current-password"
                   className="w-full outline-none"
                 />
                 <button
@@ -116,17 +128,19 @@ export default function AdminLoginScreen() {
             <label className="flex items-center gap-2 text-sm text-slate-500">
               <input
                 type="checkbox"
-                defaultChecked
+                checked={remember}
+                onChange={(event) => setRemember(event.target.checked)}
                 className="accent-orange-500"
               />{" "}
               Ghi nhớ đăng nhập
             </label>
-            <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 py-4 font-bold text-white transition hover:bg-orange-500">
-              Vào bản xem thử <ArrowRight size={17} />
+            {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+            <button disabled={pending} className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-950 py-4 font-bold text-white transition hover:bg-orange-500 disabled:opacity-60">
+              {pending ? 'Đang đăng nhập...' : 'Đăng nhập'} <ArrowRight size={17} />
             </button>
           </form>
           <p className="mt-8 flex items-center gap-2 text-xs text-slate-400">
-            Giao diện demo, chưa kết nối hệ thống xác thực.
+            Đăng nhập bằng tài khoản quản trị hoặc biên tập viên.
           </p>
         </div>
       </section>

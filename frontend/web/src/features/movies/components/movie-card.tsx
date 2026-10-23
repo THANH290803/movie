@@ -10,12 +10,12 @@ import type { CatalogMovie } from '@/features/movies/types/catalog-movie'
 
 export function MovieCard({ movie }: { movie: CatalogMovie }) {
   const { savedIds, toggleSaved } = useSavedMovies()
-  const isSaved = savedIds.includes(movie.id)
+  const isSaved = savedIds.includes(String(movie.id))
 
   return (
     <article className="cine-card">
       <div className="cine-poster">
-        <Link href={routes.site.movie(movie.id)} aria-label={`Xem chi tiết ${movie.name}`}>
+        <Link href={routes.site.movie(movie.slug)} aria-label={`Xem chi tiết ${movie.name}`}>
           <Image src={movie.image} alt="" fill sizes="(max-width: 600px) 50vw, (max-width: 1100px) 33vw, 20vw" />
           <span className="cine-poster-shade" />
           <span className="cine-poster-play"><Play size={17} fill="currentColor" /></span>
@@ -23,7 +23,7 @@ export function MovieCard({ movie }: { movie: CatalogMovie }) {
         <button
           className={`cine-save-icon${isSaved ? ' is-saved' : ''}`}
           type="button"
-          onClick={() => toggleSaved(movie.id)}
+          onClick={() => void toggleSaved(movie.slug)}
           aria-label={isSaved ? `Bỏ lưu ${movie.name}` : `Lưu ${movie.name}`}
           aria-pressed={isSaved}
         >
@@ -31,7 +31,7 @@ export function MovieCard({ movie }: { movie: CatalogMovie }) {
         </button>
         <span className="cine-rating"><Star size={12} fill="currentColor" /> {movie.rating}</span>
       </div>
-      <h3><Link href={routes.site.movie(movie.id)}>{movie.name}</Link></h3>
+      <h3><Link href={routes.site.movie(movie.slug)}>{movie.name}</Link></h3>
       <p>{movie.year} · {getCatalogMeta(movie)}<span>{movie.type}</span></p>
     </article>
   )

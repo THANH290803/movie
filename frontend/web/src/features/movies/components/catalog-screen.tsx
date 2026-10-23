@@ -13,7 +13,6 @@ export function CatalogScreen({ movies, query = '', genre = '' }: { movies: Cata
   const normalizedQuery = query.trim().toLocaleLowerCase('vi')
   const results = movies.filter((movie) =>
     (type === 'Tất cả' || movie.type === type) &&
-    (!genre || movie.genre.toLocaleLowerCase('vi').includes(genre.toLocaleLowerCase('vi'))) &&
     (!normalizedQuery || `${movie.name} ${movie.cast} ${movie.genre}`.toLocaleLowerCase('vi').includes(normalizedQuery)),
   )
 

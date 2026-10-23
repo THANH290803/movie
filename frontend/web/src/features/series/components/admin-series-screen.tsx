@@ -20,6 +20,7 @@ import {
 import { PageHeader } from "@/components/common/page-header";
 import { useMetadataStore } from "@/features/metadata/stores/metadata-store";
 import { contentMetadataLabels } from "@/features/metadata/lib/metadata-rules";
+import { slugify, uniqueSlug } from "@/lib/slug";
 
 import type { Episode, Part, Series } from "@/features/series/types/series";
 import { mockSeries } from "@/features/series/data/mock-series";
@@ -93,6 +94,7 @@ export default function SeriesPage() {
     if (seriesModal === "new") {
       const created = {
         id: Date.now(),
+        slug: uniqueSlug(form.name, items.map((item) => item.slug)),
         ...form,
         name: form.name.trim(),
         parts: [],
@@ -167,6 +169,7 @@ export default function SeriesPage() {
                     ...part.episodes,
                     {
                       id: Date.now(),
+                      slug: uniqueSlug(episodeForm.title, item.parts.flatMap((part) => part.episodes.map((episode) => episode.slug))),
                       number: part.episodes.length + 1,
                       ...episodeForm,
                       title: episodeForm.title.trim(),
@@ -291,14 +294,14 @@ export default function SeriesPage() {
                 </div>
                 <div className="flex gap-2">
                   <Link
-                    href={`/admin/series/${selected.id}`}
+                    href={`/admin/series/${selected.slug}`}
                     className="rounded-xl border border-white/15 p-3 text-slate-300 hover:bg-white/10"
                     aria-label="Xem chi tiết phim"
                   >
                     <Eye size={17} />
                   </Link>
                   <Link
-                    href={`/admin/series/${selected.id}/edit`}
+                    href={`/admin/series/${selected.slug}/edit`}
                     className="rounded-xl border border-white/15 p-3 text-slate-300 hover:bg-white/10"
                     aria-label="Sửa thông tin phim"
                   >
@@ -420,7 +423,7 @@ export default function SeriesPage() {
                             <button
                               onClick={() => {
                                 router.push(
-                                  `/admin/series/${selected.id}/episodes/new?partId=${part.id}`,
+                                  `/admin/series/${selected.slug}/episodes/new?part=${slugify(part.name)}`,
                                 );
                               }}
                               className="flex items-center gap-1.5 rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white"
@@ -453,7 +456,7 @@ export default function SeriesPage() {
                                   <button
                                     onClick={() => {
                                       router.push(
-                                        `/admin/series/${selected.id}/episodes/${ep.id}/edit?partId=${part.id}`,
+                                        `/admin/series/${selected.slug}/episodes/${ep.slug}/edit?part=${slugify(part.name)}`,
                                       );
                                     }}
                                     className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-900"

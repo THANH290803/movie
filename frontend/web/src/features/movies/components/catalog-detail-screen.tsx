@@ -5,13 +5,14 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { ArrowDown, ArrowLeft, ArrowUpRight, Film, Heart, Layers3, Play, Star } from 'lucide-react'
 import { routes } from '@/config/routes'
+import { catalogEpisodeSlug } from '@/lib/slug'
 import { useSavedMovies } from '@/features/movies/hooks/use-saved-movies'
 import { getCatalogMeta } from '@/features/movies/lib/catalog-meta'
 import type { CatalogMovie } from '@/features/movies/types/catalog-movie'
 
 export function CatalogDetailScreen({ movie, relatedMovies }: { movie: CatalogMovie; relatedMovies: CatalogMovie[] }) {
   const { savedIds, toggleSaved } = useSavedMovies()
-  const isSaved = savedIds.includes(movie.id)
+  const isSaved = savedIds.includes(String(movie.id))
   const hasEpisodes = movie.type === 'Phim bộ' && movie.parts.some((part) => part.episodes.length > 0)
 
   return (
@@ -28,10 +29,10 @@ export function CatalogDetailScreen({ movie, relatedMovies }: { movie: CatalogMo
           <div className="cine-detail-meta"><span className="cine-detail-length">{getCatalogMeta(movie)}</span><span className="cine-detail-rating"><Star size={16} fill="currentColor" /><strong>{movie.rating}</strong><small>Điểm phim</small></span></div>
           <div className="cine-detail-actions">
             {movie.type === 'Phim lẻ' || hasEpisodes ? (
-              <Link className="cine-primary-button" href={routes.site.watch(movie.id)}><Play size={16} fill="currentColor" />{movie.type === 'Phim bộ' ? 'Xem tập đầu' : 'Xem phim'}</Link>
+              <Link className="cine-primary-button" href={routes.site.watch(movie.slug)}><Play size={16} fill="currentColor" />{movie.type === 'Phim bộ' ? 'Xem tập đầu' : 'Xem phim'}</Link>
             ) : <span className="cine-primary-button is-disabled">Chưa có tập phim</span>}
             <a className="cine-secondary-button" href={movie.type === 'Phim bộ' ? '#episodes' : '#overview'}><ArrowDown size={15} />{movie.type === 'Phim bộ' ? 'Xem danh sách tập' : 'Xem nội dung phim'}</a>
-            <button className={`cine-save-button${isSaved ? ' is-saved' : ''}`} type="button" onClick={() => toggleSaved(movie.id)} aria-pressed={isSaved}>
+            <button className={`cine-save-button${isSaved ? ' is-saved' : ''}`} type="button" onClick={() => void toggleSaved(movie.slug)} aria-pressed={isSaved}>
               <Heart size={16} fill={isSaved ? 'currentColor' : 'none'} />{isSaved ? 'Đã lưu' : 'Lưu phim'}
             </button>
           </div>
@@ -66,7 +67,7 @@ export function CatalogDetailScreen({ movie, relatedMovies }: { movie: CatalogMo
           <div className="cine-detail-related-heading"><div><p className="cine-kicker orange">DÀNH CHO BẠN</p><h2 id="cine-related-title">Có thể bạn thích</h2></div><Link href={routes.site.movies}>Xem kho phim <ArrowUpRight size={16} /></Link></div>
           <div className="cine-detail-related-list">
             {relatedMovies.map((relatedMovie) => (
-              <Link key={relatedMovie.id} href={routes.site.movie(relatedMovie.id)} className="cine-detail-related-item">
+              <Link key={relatedMovie.id} href={routes.site.movie(relatedMovie.slug)} className="cine-detail-related-item">
                 <span className="cine-detail-related-image"><Image src={relatedMovie.image} alt="" fill sizes="(max-width: 640px) 80px, 105px" /></span>
                 <span className="cine-detail-related-copy"><strong>{relatedMovie.name}</strong><small>{relatedMovie.year} · {relatedMovie.type}</small><span>{relatedMovie.genre}</span></span>
                 <ArrowUpRight className="cine-detail-related-arrow" size={16} />
@@ -80,7 +81,7 @@ export function CatalogDetailScreen({ movie, relatedMovies }: { movie: CatalogMo
 }
 
 function SeriesEpisodes({ movie }: { movie: Extract<CatalogMovie, { type: 'Phim bộ' }> }) {
-  const [selectedPartId, setSelectedPartId] = useState<number | null>(null)
+  const [selectedPartId, setSelectedPartId] = useState<string | number | null>(null)
   const activePart = movie.parts.find((part) => part.id === selectedPartId) ?? movie.parts[0]
   const totalEpisodes = movie.parts.reduce((total, part) => total + part.episodes.length, 0)
 
@@ -107,7 +108,7 @@ function SeriesEpisodes({ movie }: { movie: Extract<CatalogMovie, { type: 'Phim 
         <ol className="cine-episode-grid">
           {activePart.episodes.map((episode) => (
             <li key={episode.id}>
-              <Link href={routes.site.watchEpisode(movie.id, episode.id)} className="cine-episode-card" aria-label={`Xem ${activePart.name}, tập ${episode.number}: ${episode.title}`}>
+              <Link href={routes.site.watchEpisode(movie.slug, episode.slug ?? catalogEpisodeSlug(activePart.name, episode.number))} className="cine-episode-card" aria-label={`Xem ${activePart.name}, tập ${episode.number}: ${episode.title}`}>
                 <div className="cine-episode-thumb"><Image src={movie.image} alt="" fill sizes="(max-width: 640px) 100vw, 180px" /><span>TẬP {String(episode.number).padStart(2, '0')}</span></div>
                 <div className="cine-episode-copy"><p>{activePart.name} · {episode.duration}</p><h3>{episode.title}</h3><span>{episode.synopsis}</span></div>
                 <span className="cine-episode-play" aria-hidden="true"><Play size={18} fill="currentColor" /></span>

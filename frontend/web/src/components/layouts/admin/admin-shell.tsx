@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Bell,
   Clapperboard,
@@ -18,8 +18,10 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { routes } from '@/config/routes';
+import { api, isSignedIn, signOut } from '@/lib/api/client';
+import type { ApiUser } from '@/lib/api/types';
 
 const links = [
   { href: routes.admin.dashboard, label: "Tổng quan", icon: LayoutDashboard },
@@ -34,8 +36,33 @@ const links = [
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<ApiUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let active = true;
+    if (!isSignedIn()) {
+      router.replace(routes.admin.login);
+      return;
+    }
+    api<{ user: ApiUser }>('/auth/me').then(({ user: account }) => {
+      if (!active) return;
+      if (account.role !== 'admin' && account.role !== 'editor') { router.replace(routes.admin.login); return; }
+      setUser(account);
+      setLoading(false);
+    }).catch((cause) => {
+      if (!active) return;
+      if (cause?.status === 401 || cause?.status === 403) router.replace(routes.admin.login);
+      else { setError(cause instanceof Error ? cause.message : 'Không thể tải tài khoản.'); setLoading(false); }
+    });
+    return () => { active = false; };
+  }, [router]);
   const active = links.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)) ?? links[0];
+  if (loading) return <div className="grid min-h-screen place-items-center bg-[#f7f8fc] text-slate-500">Đang kiểm tra phiên đăng nhập...</div>;
+  if (error) return <div role="alert" className="grid min-h-screen place-items-center bg-[#f7f8fc] text-red-700">{error}</div>;
+  if (!user) return null;
   return (
     <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
       <aside
@@ -71,7 +98,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           QUẢN LÝ NỘI DUNG
         </p>
         <nav className="space-y-1">
-          {links.slice(0, 4).map(({ href, label, icon: Icon }) => (
+          {links.slice(0, 4).filter((item) => user.role === 'admin' || item.href !== routes.admin.users).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -82,7 +109,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <span>{label}</span>
               {label === "Phim bộ & phần" && (
                 <span className="ml-auto rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-600">
-                  12
+                  ·
                 </span>
               )}
             </Link>
@@ -105,19 +132,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </Link>
         <div className="mt-auto flex shrink-0 items-center gap-3 border-t border-slate-100 pt-4">
           <div className="grid h-9 w-9 place-items-center rounded-full bg-slate-900 text-xs font-bold text-white">
-            AD
+            {user.fullName.slice(0, 2).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold">Admin</p>
-            <p className="truncate text-xs text-slate-500">admin@cineflow.vn</p>
+            <p className="text-sm font-semibold">{user.fullName}</p>
+            <p className="truncate text-xs text-slate-500">{user.email}</p>
           </div>
-          <Link
+          <button
             className="ml-auto text-slate-400"
-            href={routes.admin.login}
-            aria-label="Về màn hình đăng nhập"
+            onClick={async () => { await signOut(); router.replace(routes.admin.login); }}
+            aria-label="Đăng xuất"
           >
             <LogOut size={16} />
-          </Link>
+          </button>
         </div>
       </aside>
       <section className="lg:pl-72">
@@ -150,7 +177,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <i className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-orange-500" />
             </button>
             <div className="ml-2 grid h-9 w-9 place-items-center rounded-full bg-slate-900 text-xs font-bold text-white">
-              AD
+              {user.fullName.slice(0, 2).toUpperCase()}
             </div>
           </div>
         </header>

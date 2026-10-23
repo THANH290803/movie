@@ -9,6 +9,7 @@ import { AdminTablePagination } from "@/components/common/admin-table-pagination
 import { useMetadataStore } from "@/features/metadata/stores/metadata-store";
 import { contentMetadataLabels } from "@/features/metadata/lib/metadata-rules";
 import { useAdminTablePagination } from "@/hooks/use-admin-table-pagination";
+import { uniqueSlug } from "@/lib/slug";
 
 import type { Movie } from "@/features/movies/types/movie";
 import { mockMovies } from "@/features/movies/data/mock-movies";
@@ -52,7 +53,7 @@ export default function MoviesPage() {
     if (editing.id === 0)
       setMovies((current) => [
         ...current,
-        { id: Date.now(), ...form, name: form.name.trim() },
+        { id: Date.now(), slug: uniqueSlug(form.name, current.map((movie) => movie.slug)), ...form, name: form.name.trim() },
       ]);
     else
       setMovies((current) =>
@@ -150,7 +151,7 @@ export default function MoviesPage() {
                   <td className="px-3">
                     <div className="flex items-center gap-1">
                       <Link
-                        href={`/admin/movies/${movie.id}`}
+                        href={`/admin/movies/${movie.slug}`}
                         className="inline-flex size-10 items-center justify-center rounded-lg text-slate-400 hover:bg-orange-50 hover:text-orange-600"
                         aria-label={`Xem chi tiết ${movie.name}`}
                         title="Xem chi tiết"
@@ -158,7 +159,7 @@ export default function MoviesPage() {
                         <Eye size={17} />
                       </Link>
                       <Link
-                        href={`/admin/movies/${movie.id}/edit`}
+                        href={`/admin/movies/${movie.slug}/edit`}
                         className="inline-flex size-10 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-900"
                         aria-label={`Sửa ${movie.name}`}
                         title="Sửa phim"

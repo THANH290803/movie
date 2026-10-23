@@ -1,5 +1,5 @@
-import Screen from '@/features/movies/components/admin-movies-screen'
+import { ApiTitleList } from '@/features/admin/components/api-title-list'
 
 export default function Page() {
-  return <Screen />
+  return <ApiTitleList kind="movie" />
 }

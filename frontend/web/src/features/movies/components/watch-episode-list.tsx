@@ -3,15 +3,16 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { routes } from '@/config/routes'
+import { catalogEpisodeSlug } from '@/lib/slug'
 import type { CatalogEpisode } from '@/features/movies/types/catalog-movie'
 
 const EPISODES_PER_GROUP = 12
 
-export function WatchEpisodeList({ movieId, partName, episodes, selectedEpisodeId }: {
-  movieId: number;
+export function WatchEpisodeList({ movieSlug, partName, episodes, selectedEpisodeId }: {
+  movieSlug: string;
   partName: string;
   episodes: CatalogEpisode[];
-  selectedEpisodeId: number;
+  selectedEpisodeId: string | number;
 }) {
   const selectedIndex = Math.max(episodes.findIndex((episode) => episode.id === selectedEpisodeId), 0)
   const [groupIndex, setGroupIndex] = useState(Math.floor(selectedIndex / EPISODES_PER_GROUP))
@@ -42,7 +43,7 @@ export function WatchEpisodeList({ movieId, partName, episodes, selectedEpisodeI
       <ol className="cine-watch-episode-list" aria-label={`Các tập ${partName}, nhóm ${groupIndex + 1}`}>
         {visibleEpisodes.map((episode) => (
           <li key={episode.id}>
-            <Link href={routes.site.watchEpisode(movieId, episode.id)} className={selectedEpisodeId === episode.id ? 'is-active' : ''} aria-current={selectedEpisodeId === episode.id ? 'page' : undefined} aria-label={`Xem tập ${episode.number}: ${episode.title}, ${episode.duration}`}>
+            <Link href={routes.site.watchEpisode(movieSlug, episode.slug ?? catalogEpisodeSlug(partName, episode.number))} className={selectedEpisodeId === episode.id ? 'is-active' : ''} aria-current={selectedEpisodeId === episode.id ? 'page' : undefined} aria-label={`Xem tập ${episode.number}: ${episode.title}, ${episode.duration}`}>
               <span className="cine-watch-episode-number">{episode.number}</span>
             </Link>
           </li>

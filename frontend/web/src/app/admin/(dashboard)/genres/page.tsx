@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { MetadataScreen } from '@/features/metadata/components/metadata-screen'
+import { ApiMetadata } from '@/features/admin/components/api-metadata'
 
 export const metadata: Metadata = { title: 'Thể loại' }
 
 export default function GenresPage() {
-  return <MetadataScreen key="genre" kind="genre" />
+  return <ApiMetadata kind="genre" />
 }

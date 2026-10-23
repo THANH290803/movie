@@ -3,10 +3,12 @@ export const routes = {
     home: '/',
     movies: '/movies',
     saved: '/saved',
-    movie: (id: number | string) => `/movies/${encodeURIComponent(String(id))}`,
-    watch: (id: number | string) => `/movies/${encodeURIComponent(String(id))}/watch`,
-    watchEpisode: (id: number | string, episodeId: number | string) =>
-      `/movies/${encodeURIComponent(String(id))}/watch?episode=${encodeURIComponent(String(episodeId))}`,
+    login: '/login',
+    register: '/register',
+    movie: (slug: string) => `/movies/${encodeURIComponent(slug)}`,
+    watch: (slug: string) => `/movies/${encodeURIComponent(slug)}/watch`,
+    watchEpisode: (slug: string, episodeSlug: string) =>
+      `/movies/${encodeURIComponent(slug)}/watch?episode=${encodeURIComponent(episodeSlug)}`,
   },
   admin: {
     home: '/admin',

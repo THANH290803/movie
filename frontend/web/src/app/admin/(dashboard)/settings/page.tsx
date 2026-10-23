@@ -1,5 +1,5 @@
-import Screen from '@/features/settings/components/admin-settings-screen'
+import { ApiSettings } from '@/features/admin/components/api-settings'
 
 export default function Page() {
-  return <Screen />
+  return <ApiSettings />
 }

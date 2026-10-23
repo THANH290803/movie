@@ -6,8 +6,24 @@ services:
     rootDir: backend
     buildCommand: npm ci && npm run build
     startCommand: npm run start
-    healthCheckPath: /health
+    healthCheckPath: /health/ready
     autoDeployTrigger: off
     envVars:
       - key: NODE_VERSION
         value: '24'
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: TRUST_PROXY
+        value: '1'

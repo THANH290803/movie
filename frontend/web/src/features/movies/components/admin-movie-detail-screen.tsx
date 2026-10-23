@@ -5,15 +5,11 @@ import { ArrowLeft, Edit3, Play, Film, UserRound } from "lucide-react";
 import { PageHeader } from "@/components/common/page-header";
 import { useMetadataStore } from "@/features/metadata/stores/metadata-store";
 import { contentMetadataLabels } from "@/features/metadata/lib/metadata-rules";
-import { useParams } from "next/navigation";
-import { mockMovies } from "@/features/movies/data/mock-movies";
+import type { Movie } from "@/features/movies/types/movie";
 
-export default function MovieDetailPage() {
-  const { id } = useParams<{ id: string }>();
+export default function MovieDetailPage({ movie }: { movie: Movie }) {
   const state = useMetadataStore();
-  const movie =
-    mockMovies.find((item) => String(item.id) === id) ?? mockMovies[0];
-  const labels = contentMetadataLabels(state, `movie:${id}`);
+  const labels = contentMetadataLabels(state, `movie:${movie.id}`);
   return (
     <>
       <PageHeader
@@ -55,7 +51,7 @@ export default function MovieDetailPage() {
                 </p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link
-                    href={`/admin/movies/${id}/edit`}
+                    href={`/admin/movies/${movie.slug}/edit`}
                     className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-bold"
                   >
                     <Edit3 size={16} /> Chỉnh sửa phim

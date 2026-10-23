@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import { MetadataScreen } from '@/features/metadata/components/metadata-screen'
+import { ApiMetadata } from '@/features/admin/components/api-metadata'
 
 export const metadata: Metadata = { title: 'Đạo diễn' }
 
 export default function DirectorsPage() {
-  return <MetadataScreen key="director" kind="director" />
+  return <ApiMetadata kind="director" />
 }

@@ -3,6 +3,7 @@ import type { Movie } from "@/features/movies/types/movie";
 export const mockMovies: Movie[] = [
   {
     id: 1,
+    slug: "dune-part-two",
     name: "Dune: Part Two",
     year: "2024",
     status: "Đang chiếu",
@@ -13,6 +14,7 @@ export const mockMovies: Movie[] = [
   },
   {
     id: 2,
+    slug: "oppenheimer",
     name: "Oppenheimer",
     year: "2023",
     status: "Bản nháp",
@@ -23,6 +25,7 @@ export const mockMovies: Movie[] = [
   },
   {
     id: 3,
+    slug: "the-batman",
     name: "The Batman",
     year: "2022",
     status: "Đang chiếu",

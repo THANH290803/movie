@@ -1,5 +1,5 @@
-import Screen from '@/features/dashboard/components/admin-dashboard-screen'
+import { ApiDashboard } from '@/features/admin/components/api-dashboard'
 
 export default function Page() {
-  return <Screen />
+  return <ApiDashboard />
 }

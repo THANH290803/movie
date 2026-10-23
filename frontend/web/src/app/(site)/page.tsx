@@ -1,6 +1,8 @@
 import { HomeScreen } from '@/features/movies/components/home-screen'
-import { mockCatalog } from '@/features/movies/data/mock-catalog'
+import { getPublicTitles } from '@/features/movies/lib/catalog-api'
 
-export default function HomePage() {
-  return <HomeScreen movies={mockCatalog} />
+export const dynamic = 'force-dynamic'
+
+export default async function HomePage() {
+  return <HomeScreen movies={await getPublicTitles()} />
 }
